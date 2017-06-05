@@ -1,0 +1,17 @@
+#!/bin/bash
+
+TABLE=/tmp/priority_order
+if [ ! -f /tmp/whattomine ]; then
+  /usr/local/bin/getEthCoinStats
+fi
+LAST=`cat /tmp/whattomine | grep "Last update"`
+
+#EXCLUDE A SINGLE LINE OBNOXIOUSLY
+MAGIC_STRING=`cat /tmp/priority_order | html2text -width 200 -nobs | grep MYR -A1 | grep -v "MYR" | awk '{print $3}'`
+
+
+#cat ${TABLE} | html2text -width 200 | grep -v ": -"
+cat ${TABLE} | html2text -nobs -width 200 | grep -v ": -" | grep -v "^Groestl" | grep -v "Grs2" | grep -v "Diamond" | grep -v "Dmd1" | grep -v "\[Myr\]" | grep -v "MYR" | grep -v "LB: ${MAGIC_STRING}" | sed 's/\[/\'$'\n\[/g'
+echo ""
+echo $LAST
+echo "           NOW "`TZ=UTC date +"%Y-%m-%d %H:%M:%S UTC"`

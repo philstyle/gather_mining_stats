@@ -1,0 +1,24 @@
+#!/bin/bash
+
+
+#!/bin/bash
+DEFAULT_COIN="ethereum"
+
+if [ "x$1" = "x" ]; then
+ COIN=$DEFAULT_COIN
+else
+ COIN=$1
+fi
+
+
+printf "%s\t%s\t%s\t%s" "SYM" "RANK" "PRICE $"
+echo ""
+
+for COIN in ethereum ethereum-classic expanse ubiq musicoin digibyte; do
+ OUTFILE=/tmp/${COIN}ticker
+ curl --silent "https://api.coinmarketcap.com/v1/ticker/${COIN}/" > ${OUTFILE}
+ cat ${OUTFILE} | jq ".[0] | .symbol, .rank, .price_usd" | awk 'NR > 1 { printf("\t") } {printf "%s",$0}' | tr -d '"'
+ echo ""
+ sleep .5
+done
+

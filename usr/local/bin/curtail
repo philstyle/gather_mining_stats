@@ -1,0 +1,24 @@
+#!/bin/bash
+DEFAULT_HOST=airbuntu
+DEFAULT_TAIL=5
+if [ "x$1" = "x" ]; then
+ HOST=$DEFAULT_HOST
+else
+ HOST=$1
+fi
+if [ "x$2" = "x" ]; then
+ TAIL=$DEFAULT_TAIL
+else
+ TAIL=$2
+fi
+
+if [ ${HOST} != ${DEFAULT_HOST} ]; then
+ #assume cubuntu
+ IP="10.144.24.30"
+ FILENAME=`ssh -oConnectTimeout=3 -i ~/.ssh/id_rsa_drew ${IP} "ls -1tr /home/drew/Claymore | grep txt | tail -n1"`
+ ssh -oConnectTimeout=3 -i ~/.ssh/id_rsa_drew ${IP} "tail -500 /home/drew/Claymore/${FILENAME} | egrep 'GPU|Shares'| tail -n${TAIL}"
+else
+ IP="10.144.24.34"
+ FILENAME=`ls -1tr /home/drew/Claymore | grep txt | tail -n1`
+ tail -500 /home/drew/Claymore/${FILENAME} | egrep 'GPU|Shares'| tail -n${TAIL}
+fi

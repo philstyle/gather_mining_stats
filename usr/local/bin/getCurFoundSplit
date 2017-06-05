@@ -1,0 +1,18 @@
+#!/bin/bash
+
+FILE=`ls -1tr /home/drew/Claymore | grep txt | tail -n1`
+
+pushd /home/drew/Claymore > /dev/null 2>&1
+
+
+FOUND=`cat ${FILE} | grep "SHARE FOUND" | wc -l`
+
+GPU0=`cat ${FILE} | grep "SHARE FOUND" | grep "GPU 0" | wc -l`
+
+GPU1=`cat ${FILE} | grep "SHARE FOUND" | grep "GPU 1" | wc -l`
+
+printf "%s\t%s\t%s" "GPU0%" "GPU0" "GPU1"
+echo ""
+printf "%s\t%s\t%s" `echo "scale=2;${GPU0}/${FOUND}"|bc -l` ${GPU0} ${GPU1}
+echo ""
+popd > /dev/null 2>&1

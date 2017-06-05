@@ -1,0 +1,12 @@
+#!/bin/bash
+pushd /git/mining_stats > /dev/null 2>&1
+git reset --hard origin/master > /dev/null 2>&1
+echo "\`\`\`" > README.md
+/usr/local/bin/curStatsM >> README.md
+echo "\`\`\`" >> README.md
+sleep 1
+cat README.md > /dev/null
+git add README.md > /dev/null 2>&1
+git commit -m "`date`" > /dev/null 2>&1
+git push origin master > /dev/null 2>&1
+popd > /dev/null 2>&1

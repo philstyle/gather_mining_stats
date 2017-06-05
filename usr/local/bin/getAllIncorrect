@@ -1,0 +1,20 @@
+#!/bin/bash
+
+FILENAME=`ls -1tr /home/drew/Claymore | grep txt | tail -n1`
+
+pushd /home/drew/Claymore > /dev/null 2>&1
+echo ""
+printf "%s\t%s\t%s" "PERCENT" "INC" "SHARES"
+echo ""
+for FILE in `ls -1 | grep "log.txt"`; do
+ SIZE=`cat ${FILE} | grep "SHARE" | wc -l`
+ INC=`cat ${FILE} | grep incorrect | wc -l`
+ if [ ${SIZE} -eq "0" ]; then
+  continue
+ fi
+ PCT=`echo "( ${INC} / ${SIZE} )" | bc -l`
+ PCT=`echo "${PCT} * 100" | bc -l`
+ printf "%s\t%s\t%s" `echo "scale=2;${PCT}/1"|bc -l` $INC $SIZE
+ echo ""
+done
+popd > /dev/null 2>&1

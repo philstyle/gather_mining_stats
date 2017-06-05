@@ -1,0 +1,11 @@
+#!/bin/bash
+
+TABLE=/tmp/priority_order_7d
+if [ ! -f /tmp/whattomine_7d ]; then
+  /usr/local/bin/getEthCoinStats7Day
+fi
+LAST=`cat /tmp/whattomine_7d | grep "Last update"`
+cat ${TABLE} | html2text | grep -v ": -"
+echo ""
+echo $LAST
+echo "           NOW "`TZ=UTC date +"%Y-%m-%d %H:%M:%S UTC"`

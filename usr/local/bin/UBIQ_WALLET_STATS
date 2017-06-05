@@ -1,0 +1,52 @@
+#!/bin/bash
+OUTFILE=/tmp/UBIQ_STATS
+
+timeout 8 curl --silent http://ubiqpool.io/api/accounts/0x2a6d7f678ef26d4dd120c796b24e550118939854 > ${OUTFILE}
+
+if [ `du -b ${OUTFILE} | awk '{print $1}'` -eq "0" ]; then
+  echo "NO STATS"
+  exit 0
+fi
+
+ONLINE=`cat ${OUTFILE} | jq '.workersOnline' | tr -d '"'`
+if [ ${ONLINE} -ne "0" ]; then
+
+ printf "%s\t\t%s\t%s\t%s" "WORKER" "HASHRATE" "REPORTED" "OFFLINE"
+ echo ""
+ HR=`cat ${OUTFILE} | jq ".currentHashrate"`
+ MHs=`echo "scale=1; ${HR} / 1000000" | bc -l`
+ HR2=`cat ${OUTFILE} | jq ".hashrate"`
+ MHs2=`echo "scale=1; ${HR2} / 1000000" | bc -l`
+ printf "%s\t%s\t%s\t" "SUM TOTAL" "${MHs} MH/s" "${MHs2} MH/s"
+
+
+ echo ""
+ for WORKER in `cat ${OUTFILE} | jq '.workers | keys[]' | tr -d '"'`
+ do
+  #printf "%s\t" ${WORKER}
+  HR=`cat ${OUTFILE} | jq ".workers.${WORKER}.hr"`
+  MHs=`echo "scale=1; ${HR} / 1000000" | bc -l`
+  HR2=`cat ${OUTFILE} | jq ".workers.${WORKER}.hr2"`
+  MHs2=`echo "scale=1; ${HR2} / 1000000" | bc -l`
+  OFFLINE=`cat ${OUTFILE} | jq ".workers.${WORKER}.offline"`
+  if [ ${#WORKER} -lt 8 ]; then
+   printf "%s\t\t" ${WORKER} | tr -d '"'
+  else
+   printf "%s\t" ${WORKER} | tr -d '"'
+  fi
+  printf "%s\t%s\t%s" "${MHs} MH/s" "${MHs2} MH/s" ${OFFLINE}
+  #cat ${OUTFILE} | jq ".workers.${WORKER}.hr, .workers.${WORKER}.hr2, .workers.${WORKER}.offline" | awk 'NR > 1 { printf("\t") } {printf "%s",$0}'
+  echo ""
+ done
+ echo ""
+# echo "ETH PER MIN " `cat ${OUTFILE} | jq ".ethPerMin" | sed -e 's/[eE]+*/\*10\^/' | bc -l`
+# echo "\$   PER MIN " `cat ${OUTFILE} | jq ".usdPerMin" | bc -l`
+fi
+printf "%s\t%s\t" "ROUND SHARES" "PAYMENTS TOTAL"
+echo ""
+cat ${OUTFILE} | jq ".roundShares,.paymentsTotal" | awk 'NR > 1 { printf("\t\t") } {printf "%s",$0}'
+
+#BITS=`cat ${OUTFILE} | jq ".unpaid"`
+#LITTLEBITS=`echo "$BITS / 1000000000000000000" | bc -l` #septillions?
+#echo " UNPAID ETH  ${LITTLEBITS}"
+echo ""

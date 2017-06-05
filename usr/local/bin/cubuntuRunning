@@ -1,0 +1,2 @@
+#!/bin/bash
+ssh -oConnectTimeout=3 -i ~/.ssh/id_rsa_drew 10.144.24.30 "/usr/local/bin/getMineMode"

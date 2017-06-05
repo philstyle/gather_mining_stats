@@ -1,0 +1,64 @@
+#!/bin/bash
+#GROESTL
+GOUTFILE=/tmp/DIGIBYTE_GROESTL_STATS
+timeout 8 curl --ssl --silent https://dgb-groestl.theblocksfactory.com/api.php?api_key=774bbcfcc77ae05e346f848ce21d867cbf50db202c99c729040ef444f0664a76 > $GOUTFILE
+
+#SKEIN
+SOUTFILE=/tmp/DIGIBYTE_SKEIN_STATS
+timeout 8 curl --ssl --silent https://dgb-skein.theblocksfactory.com/api.php?api_key=774bbcfcc77ae05e346f848ce21d867cbf50db202c99c729040ef444f0664a76 > $SOUTFILE
+
+DGB () {
+ FILE=$1
+ NAME=$2
+ if [ `du -b ${FILE} | awk '{print $1}'` -eq "0" ]; then
+  echo "NO STATS"
+  return 0
+ fi
+ #make sure there are active workers
+ ALIVE=`cat ${FILE} | grep "\"alive\":\"1\"" | wc -l`
+ OUTSTRING=""
+ if [ ${ALIVE} -ne "0" ]; then
+  OUTSTRING=" (ACTIVE)  "
+ else
+  OUTSTRING="  -------"
+ fi
+ echo "----------------  ${NAME}${OUTSTRING}----------------"
+ printf "%s\t%s\t%s" "SHARES" "CONFIRMED" "PAYOUT HISTORY"
+ echo ""
+ SHARES=`cat ${FILE} | jq '.round_shares'| tr -d '"'`
+ CONF=`cat ${FILE} | jq '.confirmed_rewards'| tr -d '"'`
+ HIST=`cat ${FILE} | jq '.payout_history'| tr -d '"'`
+ printf "%s\t%s\t%s" ${SHARES} `echo "scale=4;${CONF}/1"|bc -l`"  " `echo "scale=4;${HIST}/1"|bc -l`
+ #cat ${FILE} | jq '.round_shares,.confirmed_rewards,.payout_history' | tr -d '"' | awk 'NR > 1 { printf("\t") } {printf "%s",$0}'
+ echo ""
+ echo ""
+ if [ ${ALIVE} -ne "0" ]; then
+  printf "%s\t\t%s\t%s\t%s" "WORKER" "HASHRATE"
+  echo ""
+  THR=`cat $FILE | jq ".total_hashrate" | tr -d '"'`
+  TMH=`echo "scale=2; ${THR} / 1000" | bc -l`
+  printf "%s\t\t%s" "TOTAL" "$TMH MH/s"
+  echo ""
+  for WORKER in `cat $FILE | jq '.workers | keys[]'`; do
+   if [ `cat $FILE | jq ".workers.${WORKER}.alive" | tr -d '"'` -eq "1" ]; then
+    HR=`cat $FILE | jq ".workers.${WORKER}.hashrate" | tr -d '"'`
+    MH=`echo "scale=1; ${HR} / 1000" | bc -l`
+    WORKER_NAME=`echo ${WORKER} | tr -d '"' | tr -d '"' | awk -F'.' '{print $2}'`
+    if [ ${#WORKER_NAME} -lt 8 ]; then
+     printf "%s\t\t" ${WORKER_NAME}
+    else
+     printf "%s\t" ${WORKER_NAME}
+    fi
+    printf "%s" "$MH MH/s"
+    echo ""
+   fi
+  done
+ fi
+ echo ""
+ return 0
+}
+
+
+DGB ${GOUTFILE} "GROESTL"
+echo""
+DGB ${SOUTFILE} "SKEIN"

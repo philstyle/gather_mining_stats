@@ -1,0 +1,15 @@
+#!/bin/bash
+
+FILE=`ls -1tr /home/drew/Claymore | grep txt | tail -n1`
+
+pushd /home/drew/Claymore > /dev/null 2>&1
+
+SIZE=`cat ${FILE} | grep "SHARE" | wc -l`
+INC=`cat ${FILE} | grep incorrect | wc -l`
+printf "%s,%s,%s" "PERCENT" "INC" "SHARES"
+echo ""
+PCT=`echo "( ${INC} / ${SIZE} )" | bc -l`
+PCT=`echo "${PCT} * 100" | bc -l`
+printf "%s,%s,%s" `echo "scale=2;${PCT}/1"|bc -l` $INC $SIZE
+echo ""
+popd > /dev/null 2>&1

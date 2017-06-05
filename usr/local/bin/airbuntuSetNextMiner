@@ -1,0 +1,4 @@
+#!/bin/bash
+MODE=$1
+echo ${MODE} > /home/drew/MODE
+/usr/local/bin/airbuntuGetNextMiner

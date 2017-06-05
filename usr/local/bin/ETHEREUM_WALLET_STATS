@@ -1,0 +1,37 @@
+#!/bin/bash
+OUTFILE=/tmp/ETHEREUM_STATS
+
+timeout 8 curl --ssl --silent https://ethermine.org/api/miner_new/27fb862bbf6c26225b3baaa79b003e4f1ea9031b > ${OUTFILE}
+
+if [ `du -b ${OUTFILE} | awk '{print $1}'` -eq "0" ]; then
+  echo "NO STATS"
+  exit 0
+fi
+
+printf "%s\t\t%s\t%s\t%s" "WORKER" "HASHRATE" "REPORTED" "SHARES LAST HOUR"
+echo ""
+printf "%s\t" "SUM TOTAL"
+cat ${OUTFILE} | jq ".hashRate,.reportedHashRate" | awk 'NR > 1 { printf("\t") } {printf "%s",$0}' | tr -d '"'
+printf "\t%s\t%s" "VALID" "INVALID"
+
+echo ""
+for WORKER in `cat ${OUTFILE} | jq '.workers | keys[]'`
+do
+# cat ${OUTFILE} | jq ".workers.${WORKER}.worker, .workers.${WORKER}.hashrate, .workers.${WORKER}.reportedHashRate, .workers.${WORKER}.validShares, .workers.${WORKER}.invalidShares" | awk 'NR > 1 { printf("\t") } {printf "%s",$0}' | tr -d '"'
+ 
+ if [ ${#WORKER} -lt 8 ]; then
+  printf "%s\t\t" ${WORKER} | tr -d '"'
+ else
+  printf "%s\t" ${WORKER} | tr -d '"'
+ fi
+ cat ${OUTFILE} | jq ".workers.${WORKER}.hashrate, .workers.${WORKER}.reportedHashRate, .workers.${WORKER}.validShares, .workers.${WORKER}.invalidShares" | awk 'NR > 1 { printf("\t") } {printf "%s",$0}' | tr -d '"'
+ echo ""
+done
+echo ""
+echo "ETH PER MIN " `cat ${OUTFILE} | jq ".ethPerMin" | sed -e 's/[eE]+*/\*10\^/' | bc -l`
+echo "\$   PER MIN " `cat ${OUTFILE} | jq ".usdPerMin" | bc -l`
+
+BITS=`cat ${OUTFILE} | jq ".unpaid"`
+LITTLEBITS=`echo "$BITS / 1000000000000000000" | bc -l` #septillions?
+echo " UNPAID ETH  ${LITTLEBITS}"
+echo ""

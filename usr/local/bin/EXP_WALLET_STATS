@@ -1,0 +1,55 @@
+#!/bin/bash
+OUTFILE=/tmp/EXP_STATS
+
+timeout 8 curl --ssl --silent "https://dwarfpool.com/exp/api?wallet=0x254856971d2cf91bd7835660f2a2b7deafb037fe&email=yfisso@gmail.com" > ${OUTFILE}
+
+if [ `du -b ${OUTFILE} | awk '{print $1}'` -eq "0" ]; then
+  echo "NO STATS"
+  exit 0
+fi
+
+cat ${OUTFILE} | jq . > /dev/null 2>&1
+STATS=$?
+if [ ${STATS} -ne "0" ]; then
+ echo "NO STATS"
+ exit 0
+fi
+if [ `cat ${OUTFILE} | grep "[a-zA-Z]" | wc -l` -eq "0" ]; then
+ echo "NO STATS"
+ exit 0
+fi
+if [ `cat ${OUTFILE} | grep "NO_STAT" | wc -l` -eq "1" ]; then
+ echo "NO STATS"
+ exit 0
+fi
+THR=`cat ${OUTFILE} | jq ".total_hashrate" | tr -d '"'`
+THR=`echo "scale=1; ${THR} / 1" | bc -l`
+THRC=`cat ${OUTFILE} | jq ".total_hashrate_calculated" | tr -d '"'`
+THRC=`echo "scale=1; ${THRC} / 1" | bc -l`
+printf "%s  \t%s\t%s" "WORKER" "HR" "30mAVE"
+echo ""
+printf "%s\t%s\t%s" "SUM TOTAL" "${THR} MH/s" "${THRC} MH/s"
+printf "\t%s\t%s" "SECONDS_SINCE" "ALIVE"
+
+echo ""
+for WORKER in `cat ${OUTFILE} | jq '.workers | keys[]' | tr -d '"'`
+do
+ HR1=`cat ${OUTFILE} | jq ".workers.${WORKER}.hashrate" | tr -d '"'`
+ HR1=`echo "scale=1; ${HR1} / 1" | bc -l` 
+ HR2=`cat ${OUTFILE} | jq ".workers.${WORKER}.hashrate_calculated" | tr -d '"'`
+ HR2=`echo "scale=1; ${HR2} / 1" | bc -l` 
+ SEC=`cat ${OUTFILE} | jq ".workers.${WORKER}.second_since_submit" | tr -d '"'`
+ ALIVE=`cat ${OUTFILE} | jq ".workers.${WORKER}.alive" | tr -d '"'`
+
+ if [ ${#WORKER} -lt 8 ]; then
+  printf "%s\t\t" ${WORKER} | tr -d '"'
+ else
+  printf "%s\t" ${WORKER} | tr -d '"'
+ fi
+ if [ ${ALIVE} = "true" ]; then
+  printf "%s\t%s\t%s\t%s" "${HR1} MH/s" "${HR2} MH/s" ${SEC} ${ALIVE}
+  #cat ${OUTFILE} | jq ".workers.${WORKER}.hashrate, .workers.${WORKER}.hashrate_calculated, .workers.${WORKER}.second_since_submit, .workers.${WORKER}.alive" | awk 'NR > 1 { printf("\t") } {printf "%s",$0}'
+  echo ""
+ fi
+done
+echo ""

@@ -1,0 +1,23 @@
+#!/bin/bash
+MODE=`ps aux | grep ethdcrminer64 | grep -v grep`
+if [ `echo ${MODE} | grep ubiq | wc -l` -eq "1" ]; then
+ #MINING UBIQ
+ echo "UBIQ"
+ exit 0
+elif [ `echo ${MODE} | grep ethermine | grep etc | wc -l` -eq "1" ]; then
+ #MINING ETHEREUM CLASSIC
+ echo "ETC"
+ exit 0
+elif [ `echo ${MODE} | grep ethermine | wc -l` -eq "1" ]; then
+ #MINING ETHEREUM
+ echo "ETHEREUM"
+ exit 0
+elif [ `echo ${MODE} | grep dwarfpool | wc -l` -eq "1" ]; then
+ #MINING EXPANSE
+ echo "EXPANSE"
+ exit 0
+elif [ `echo ${MODE} | grep musicoin | wc -l` -eq "1" ]; then
+ #MINING MUSICOIN
+ echo "MUSIC"
+ exit 0
+fi

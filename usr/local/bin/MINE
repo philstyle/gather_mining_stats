@@ -1,0 +1,11 @@
+#!/bin/bash
+DEFAULT_COIN=ETHEREUM
+
+if [ "x$1" = "x" ]; then
+ COIN=$DEFAULT_COIN
+else
+ COIN=$1
+fi
+
+/usr/local/bin/airbuntuSetNextMiner ${COIN}
+/usr/local/bin/cubuntuSetNextMiner ${COIN}
