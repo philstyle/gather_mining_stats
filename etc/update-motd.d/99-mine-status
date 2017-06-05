@@ -1,0 +1,21 @@
+#!/bin/bash
+RESTARTS=/var/log/restart.count
+
+COUNT=`cat ${RESTARTS} | wc -l`
+LAST=`cat ${RESTARTS} | tail -n1`
+
+echo "############################################################"
+echo "###########################MINING###########################"
+echo "---------------------------"`cat /home/drew/MODE`"---------------------------"
+echo "############################################################"
+pushd /home/drew >> /dev/null 2>&1
+tail -1000 /home/drew/Claymore/`ls -1tr Claymore | grep txt | tail -n1` | egrep "GPU" | tail -n1
+tail -1000 /home/drew/Claymore/`ls -1tr Claymore | grep txt | tail -n1` | egrep "Shares" | tail -n1
+popd >> /dev/null 2>&1
+echo "############################################################"
+echo "${COUNT} restarts due to network issues (/home/drew/check_internet.sh) at ${LAST}"
+echo "############################################################"
+echo "###########################MINING###########################"
+echo "############################################################"
+echo "uptime: "`uptime`
+echo " "
