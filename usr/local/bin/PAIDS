@@ -90,3 +90,24 @@ UNPTOTUSD=`echo "${DIGUNUSD} + ${ETHUNUSD} + ${MUSUNUSD} + ${UBIQUNUSD}" | bc -l
 PAIDTOTUSD=`echo "${DIGPAIDUSD} + ${ETHPAIDUSD} + ${MUSPAIDUSD} + ${UBIQPAIDUSD}" | bc -l`
 printf "\t\t\t%s\t%s\t%s" "~TOT" "${UNPTOTUSD}" "${PAIDTOTUSD}"
 echo ""
+
+NOW=`date +%s`
+TOTUSD=`echo ${UNPTOTUSD} + ${PAIDTOTUSD} | bc -l`
+
+
+pushd /git/mining_stats > /dev/null 2>&1
+
+echo ${NOW} ${TOTUSD} >> TOTUSD
+
+printf "%s\t%s\t%s\t%s\t%s\t%s" ${NOW} $DIGUNPAID $DIGPAID $DIGUNUSD $DIGPAIDUSD $DIGUSD >> DIGIBYTE
+echo "" >> DIGIBYTE
+printf "%s\t%s\t%s\t%s\t%s\t%s" ${NOW} $ETHUNPAID $ETHPAID $ETHUNUSD $ETHPAIDUSD $ETHUSD >> ETHEREUM
+echo "" >> ETHEREUM
+printf "%s\t%s\t%s\t%s\t%s\t%s" ${NOW} $MUSUNPAID $MUSPAID $MUSUNUSD $MUSPAIDUSD $MUSUSD >> MUSICOIN
+echo "" >> MUSICOIN
+printf "%s\t%s\t%s\t%s\t%s\t%s" ${NOW} $UBIQUNPAID $UBIQPAID $UBIQUNUSD $UBIQPAIDUSD $UBIUSD >> UBIQ
+echo "" >> UBIQ
+git add TOTUSD DIGIBYTE ETHEREUM MUSICOIN UBIQ > /dev/null 2>&1
+git commit -m "curren\$y" > /dev/null 2>&1
+git push origin master > /dev/null 2>&1
+popd > /dev/null 2>&1
