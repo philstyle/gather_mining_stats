@@ -1,0 +1,60 @@
+#!/bin/bash
+
+#DIGIBYTE_GROESTL_STATS
+#DIGIBYTE_SKEIN_STATS
+DIGPAID=`cat /tmp/DIGIBYTE_* | jq ".payout_history" | tr -d '"' | awk 'NR > 1 { printf("+") } {printf "%s",$0}'`
+DIGPAID=`echo "scale=1; ( ${DIGPAID} ) / 1" | bc -l`
+DIGUNPAID=`cat /tmp/DIGIBYTE_* | jq ".confirmed_rewards" | tr -d '"' | awk 'NR > 1 { printf("+") } {printf "%s",$0}'`
+DIGUNPAID=`echo "scale=2; ( ${DIGUNPAID} ) / 1" | bc -l`
+
+
+#ETHEREUM_STATS
+HUGE=1000000000000000000
+ETHPAID=`cat /tmp/ETHEREUM_STATS | jq ".payouts[].amount" | awk 'NR > 1 { printf("+") } {printf "%s",$0}'`
+ETHPAID=`echo "scale=4;( ${ETHPAID} ) / ${HUGE}" | bc -l`
+ETHUNPAID=`cat /tmp/ETHEREUM_STATS | jq ".unpaid"`
+ETHUNPAID=`echo "scale=5; ${ETHUNPAID} / ${HUGE}" | bc -l`
+
+
+#ETH_CLASSIC_STATS
+#EXP_STATS
+
+
+#MUSICOIN_STATS
+MUSCALE=1000000000
+MUSPAID=`cat /tmp/MUSICOIN_STATS | jq ".stats.paid"`
+MUSPAID=`echo "scale=1; ${MUSPAID} / ${MUSCALE}" | bc -l`
+MUSUNPAID=`cat /tmp/MUSICOIN_STATS | jq ".stats.balance, .stats.immature" | awk 'NR > 1 { printf("+") } {printf "%s",$0}'`
+MUSUNPAID=`echo "scale=2;( ${MUSUNPAID} ) / ${MUSCALE}" | bc -l`
+
+#UBIQ_STATS
+UBIQSCALE=1000000000
+UBIQPAID=`cat /tmp/UBIQ_STATS | jq ".stats.paid"`
+UBIQPAID=`echo "scale=2; ${UBIQPAID} / ${UBIQSCALE}" | bc -l`
+UBIQUNPAID=`cat /tmp/UBIQ_STATS | jq ".stats.balance, .stats.immature" | awk 'NR > 1 { printf("+") } {printf "%s",$0}'`
+UBIQUNPAID=`echo "scale=4;( ${UBIQUNPAID} ) / ${UBIQSCALE}" | bc -l`
+
+
+
+
+#ethereumticker
+#ethereum-classicticker
+#expanseticker
+#ubiqticker
+#musicointicker
+#digibyteticker
+
+
+
+printf "%s\t\t%s\t\t%s" "COIN" "UNPAID" "PAID"
+echo ""
+echo "--------------------------------------"
+printf "%s\t%s\t\t%s" "DIGIBYTE" "${DIGUNPAID}" "${DIGPAID}"
+echo ""
+printf "%s\t%s\t\t%s" "ETHEREUM" "${ETHUNPAID}" "${ETHPAID}"
+echo ""
+printf "%s\t%s\t\t%s" "MUSICOIN" "${MUSUNPAID}" "${MUSPAID}"
+echo ""
+printf "%s\t\t%s\t\t%s" "UBIQ" "${UBIQUNPAID}" "${UBIQPAID}"
+echo ""
+
