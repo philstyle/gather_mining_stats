@@ -37,14 +37,12 @@ UBIQUNPAID=`echo "scale=4;( ${UBIQUNPAID} ) / ${UBIQSCALE}" | bc -l`
 
 if [ ! -e /tmp/ethereumticker ]; then
  #need to get the values
- echo "need to get more becuase it doesnt exist"
  COINMARKETCAP_TICKER 1 >> /dev/null 2>&1
 else
  LAST=`stat -t /tmp/ethereumticker | awk '{print $13}'`
  NOW=`date +%s`
  SINCE=`echo "${NOW} - ${LAST}" | bc -l`
  if [ ${SINCE} -gt 3600 ]; then
-  echo "GETTING NEW STATS" 
   COINMARKETCAP_TICKER 1 >> /dev/null 2>&1
  fi
 fi
