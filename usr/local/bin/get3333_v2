@@ -1,0 +1,33 @@
+#!/bin/bash
+curl --silent -XGET http://10.144.24.53:3333  > /tmp/BATHROOM
+curl --silent -XGET http://10.144.24.233:3333 > /tmp/MONOLITH
+curl --silent -XGET http://10.144.24.43:3333  > /tmp/AIRBUNTU
+curl --silent -XGET http://10.144.24.54:3333  > /tmp/AIRWIND2
+
+sleep .5
+
+
+SPIT () {
+ MINING=`cat $1 | html2text -nobs -width 200 | grep "New job" | tail -1 | awk -F'New job from' '{print $2}' | awk -F':' '{print $1}' | awk -F'.' '{print $2}'`
+ INCORRECT=`cat $1 | html2text -nobs -width 200 | grep "Incorrect" | tail -1 | awk -F'shares: ' '{print $2}' | tr ' ' '_'`
+ SPEED=`cat $1 | html2text -nobs -width 200 | grep "Total Shares" | tail -1 | awk -F"Speed:" '{print $2}' | awk '{print $1}'`
+ SHARES=`cat $1 | html2text -nobs -width 200 | grep "Total Shares" | tail -1 | awk -F"Shares:" '{print $2}' | awk -F',' '{print $1}'`
+ TIME=`cat $1 | html2text -nobs -width 200 | grep "Total Shares" | tail -1 | awk -F"Time:" '{print $2}'`
+ HR=`echo $TIME | awk -F ':' '{print $1}'`
+ MN=`echo $TIME | awk -F ':' '{print $2}'`
+ MINS=`echo "${HR} * 60 + ${MN}" | bc -l`
+ RATE=`echo "scale=4; ${SHARES} / ${MINS} " | bc -l`
+ HRATE=`echo "scale=6; ${RATE} / ${SPEED}" | bc -l`
+ printf "%s\t%s\t%s\t%s\t\t%s\t%s\t%s\t%s" `echo $1 | awk -F'/' '{print $3}'` $MINING $SPEED $INCORRECT $SHARES $TIME $RATE $HRATE
+ echo ""
+ #echo $SHARES shares in $TIME  -- $RATE
+}
+
+echo "------------------------------------------------------------------------------------------"
+printf "%s\t\t%s\t\t%s\t%s\t%s\t%s\t%s\t%s" "HOST" "MINING" "MH/s" "INCORRECT" "SHARES" "RUNTIME" "S/M" "S/M/MH/s"
+echo ""
+echo "------------------------------------------------------------------------------------------"
+SPIT /tmp/AIRBUNTU
+SPIT /tmp/AIRWIND2
+SPIT /tmp/BATHROOM
+SPIT /tmp/MONOLITH
