@@ -15,10 +15,20 @@ ETHPAID=`echo "scale=4;( ${ETHPAID} ) / ${HUGE}" | bc -l`
 ETHUNPAID=`cat /tmp/ETHEREUM_STATS | jq ".unpaid"`
 ETHUNPAID=`echo "scale=5; ${ETHUNPAID} / ${HUGE}" | bc -l`
 
+#ETHEREUM_NANOPOOL_STATS
+#ETHNANOPAID="0.0"
+#ETHNANOUNPAID=`cat /tmp/ETHEREUM_NANOPOOL_STATS | jq ".data.balance" | tr -d '"'`
+#ETHNANOUNPAID=`echo "scale=5; ${ETHNANOUNPAID} / 1" | bc -l` 
 
 #ETH_CLASSIC_STATS
-#EXP_STATS
 
+#EXP_STATS
+EXP_WEB=/tmp/EXP_WEB
+timeout 8 curl --ssl --silent "https://dwarfpool.com/exp/address?wallet=0x254856971d2cf91bd7835660f2a2b7deafb037fe" > ${EXP_WEB}
+EXPUNPAID=`cat ${EXP_WEB} | html2text -nobs -width 200 | egrep "EXP Current balance|EXP Confirmed but still not|EXP Unconfirmed" | awk '{print $2}' | awk 'NR > 1 { printf("+") } {printf "%s",$0}'`
+EXPUNPAID=`echo "scale=4;( ${EXPUNPAID}) / 1" | bc -l`
+EXPPAID=`cat ${EXP_WEB} | html2text -nobs -width 200 | grep "EXP Already paid" | awk '{print $2}'`
+EXPPAID=`echo "scale=3; ${EXPPAID} / 1" | bc -l`
 
 #MUSICOIN_STATS
 MUSCALE=1000000000
@@ -37,26 +47,34 @@ UBIQUNPAID=`echo "scale=4;( ${UBIQUNPAID} ) / ${UBIQSCALE}" | bc -l`
 
 if [ ! -e /tmp/ethereumticker ]; then
  #need to get the values
- COINMARKETCAP_TICKER 1 >> /dev/null 2>&1
+ /usr/local/bin/COINMARKETCAP_TICKER 1 >> /dev/null 2>&1
 else
  LAST=`stat -t /tmp/ethereumticker | awk '{print $13}'`
  NOW=`date +%s`
  SINCE=`echo "${NOW} - ${LAST}" | bc -l`
  if [ ${SINCE} -gt 3600 ]; then
-  COINMARKETCAP_TICKER 1 >> /dev/null 2>&1
+  /usr/local/bin/COINMARKETCAP_TICKER 1 >> /dev/null 2>&1
  fi
 fi
+
 
 #ethereumticker
 ETHUSD=`cat /tmp/ethereumticker | jq ".[0].price_usd" | tr -d '"'`
 ETHUNUSD=`echo "scale=2; ( ${ETHUNPAID} * ${ETHUSD} ) / 1" | bc -l`
 ETHPAIDUSD=`echo "scale=2; ( ${ETHPAID} * ${ETHUSD} ) / 1" | bc -l`
 
+#ethereum from nanopool
+#ETHNANOUNUSD=`echo "scale=2; ( ${ETHNANOUNPAID} * ${ETHUSD} ) / 1" | bc -l`
+#ETHNANOPAIDUSD=`echo "scale=2; ( ${ETHNANOPAID} * ${ETHUSD} ) / 1" | bc -l`
+
 #ethereum-classicticker
 ETCUSD=`cat /tmp/ethereum-classicticker | jq ".[0].price_usd" | tr -d '"'`
 
 #expanseticker
 EXPUSD=`cat /tmp/expanseticker | jq ".[0].price_usd" | tr -d '"'`
+EXPUNUSD=`echo "scale=2; ( ${EXPUNPAID} * ${EXPUSD} ) / 1" | bc -l`
+EXPPAIDUSD=`echo "scale=2; ( ${EXPPAID} * ${EXPUSD} ) / 1" | bc -l`
+
 
 #ubiqticker
 UBIUSD=`cat /tmp/ubiqticker | jq ".[0].price_usd" | tr -d '"'`
@@ -80,25 +98,29 @@ printf "%s\t%s\t%s\t%s\t%s\t%s" "DIGIBYTE" $DIGUNPAID $DIGPAID $DIGUNUSD $DIGPAI
 echo ""
 printf "%s\t%s\t%s\t%s\t%s\t%s" "ETHEREUM" $ETHUNPAID $ETHPAID $ETHUNUSD $ETHPAIDUSD $ETHUSD
 echo ""
+printf "%s\t\t%s\t%s\t%s\t%s\t%s" "EXPANSE" $EXPUNPAID $EXPPAID $EXPUNUSD $EXPPAIDUSD $EXPUSD
+echo ""
 printf "%s\t%s\t%s\t%s\t%s\t%s" "MUSICOIN" $MUSUNPAID $MUSPAID $MUSUNUSD $MUSPAIDUSD $MUSUSD
 echo ""
 printf "%s\t\t%s\t%s\t%s\t%s\t%s" "UBIQ" $UBIQUNPAID $UBIQPAID $UBIQUNUSD $UBIQPAIDUSD $UBIUSD
 echo ""
 echo "---------------------------------------------------------"
 
-UNPTOTUSD=`echo "${DIGUNUSD} + ${ETHUNUSD} + ${MUSUNUSD} + ${UBIQUNUSD}" | bc -l`
-PAIDTOTUSD=`echo "${DIGPAIDUSD} + ${ETHPAIDUSD} + ${MUSPAIDUSD} + ${UBIQPAIDUSD}" | bc -l`
+UNPTOTUSD=`echo "${DIGUNUSD} + ${ETHUNUSD} + ${EXPUNUSD} + ${MUSUNUSD} + ${UBIQUNUSD}" | bc -l`
+PAIDTOTUSD=`echo "${DIGPAIDUSD} + ${ETHPAIDUSD} + ${EXPPAIDUSD} + ${MUSPAIDUSD} + ${UBIQPAIDUSD}" | bc -l`
 printf "\t\t\t%s\t%s\t%s" "~TOT" "${UNPTOTUSD}" "${PAIDTOTUSD}"
 echo ""
 
 NOW=`date +%s`
 TOTUSD=`echo ${UNPTOTUSD} + ${PAIDTOTUSD} | bc -l`
 
-
 pushd /git/mining_stats > /dev/null 2>&1
 
 echo ${NOW} ${TOTUSD} >> TOTUSD
-
+#ETHUNPAID=`echo "${ETHUNPAID} + ${ETHNANOUNPAID} | bc -l`
+#ETHPAID=`echo "${ETHPAID} + ${ETHNANOPAID} | bc -l`
+#ETHUNUSD=`echo "${ETHUNUSD} + ${ETHNANOUNUSD} | bc -l`
+#ETHPAIDUSD=`echo "${ETHPAIDUSD} + ${ETHNANOPAIDUSD} | bc -l`
 printf "%s\t%s\t%s\t%s\t%s\t%s" ${NOW} $DIGUNPAID $DIGPAID $DIGUNUSD $DIGPAIDUSD $DIGUSD >> DIGIBYTE
 echo "" >> DIGIBYTE
 printf "%s\t%s\t%s\t%s\t%s\t%s" ${NOW} $ETHUNPAID $ETHPAID $ETHUNUSD $ETHPAIDUSD $ETHUSD >> ETHEREUM

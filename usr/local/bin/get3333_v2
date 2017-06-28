@@ -1,13 +1,17 @@
 #!/bin/bash
-curl --silent -XGET http://10.144.24.53:3333  > /tmp/BATHROOM
-curl --silent -XGET http://10.144.24.233:3333 > /tmp/MONOLITH
-curl --silent -XGET http://10.144.24.43:3333  > /tmp/AIRBUNTU
-curl --silent -XGET http://10.144.24.54:3333  > /tmp/AIRWIND2
+timeout 8 curl --connect-timeout 3 --silent -XGET http://10.144.24.53:3333  > /tmp/BATHROOM
+timeout 8 curl --connect-timeout 3 --silent -XGET http://10.144.24.233:3333 > /tmp/MONOLITH
+timeout 8 curl --connect-timeout 3 --silent -XGET http://10.144.24.38:3333 > /tmp/QUIET_PC
+timeout 8 curl --connect-timeout 3 --silent -XGET http://10.144.24.43:3333  > /tmp/AIRBUNTU
+timeout 8 curl --connect-timeout 3 --silent -XGET http://10.144.24.54:3333  > /tmp/AIRWIND2
 
 sleep .5
 
 
 SPIT () {
+ if [ ! -s ${1} ]; then
+  return
+ fi
  MINING=`cat $1 | html2text -nobs -width 200 | grep "New job" | tail -1 | awk -F'New job from' '{print $2}' | awk -F':' '{print $1}' | awk -F'.' '{print $2}'`
  INCORRECT=`cat $1 | html2text -nobs -width 200 | grep "Incorrect" | tail -1 | awk -F'shares: ' '{print $2}' | tr ' ' '_'`
  SPEED=`cat $1 | html2text -nobs -width 200 | grep "Total Shares" | tail -1 | awk -F"Speed:" '{print $2}' | awk '{print $1}'`
@@ -31,3 +35,4 @@ SPIT /tmp/AIRBUNTU
 SPIT /tmp/AIRWIND2
 SPIT /tmp/BATHROOM
 SPIT /tmp/MONOLITH
+SPIT /tmp/QUIET_PC

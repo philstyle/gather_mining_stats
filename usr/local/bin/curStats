@@ -7,11 +7,30 @@ fi
 LAST=`cat /tmp/whattomine | grep "Last update"`
 
 #EXCLUDE A SINGLE LINE OBNOXIOUSLY
-MAGIC_STRING=`cat /tmp/priority_order | html2text -width 200 -nobs | grep MYR -A1 | grep -v "MYR" | awk '{print $3}'`
+MAGIC_STRING=`cat ${TABLE} | html2text -width 200 -nobs | grep MYR -A1 | grep -v "MYR" | awk '{print $3}'`
+MAGIC_STRING_2=`cat ${TABLE} | html2text -width 200 -nobs | grep ZCL -A1 | grep -v "ZCL" | awk '{print $3}'`
+MAGIC_STRING_3=`cat ${TABLE} | html2text -width 200 -nobs | grep ZEN -A1 | grep -v "ZEN" | awk '{print $3}'`
+MAGIC_STRING_4=`cat ${TABLE} | html2text -width 200 -nobs | grep KMD -A1 | grep -v "KMD" | awk '{print $3}'`
 
 
 #cat ${TABLE} | html2text -width 200 | grep -v ": -"
-cat ${TABLE} | html2text -nobs -width 200 | grep -v ": -" | grep -v "^Groestl" | grep -v "Grs2" | grep -v "Diamond" | grep -v "Dmd1" | grep -v "\[Myr\]" | grep -v "MYR" | grep -v "LB: ${MAGIC_STRING}" | sed 's/\[/\'$'\n\[/g'
+cat ${TABLE} |\
+ html2text -nobs -width 200 |\
+ grep -v ": -" |\
+ grep -v "^Groestl" |\
+ grep -v "Grs2" |\
+ grep -v "Diamond" |\
+ grep -v "Dmd1" |\
+ grep -v "\[Myr\]" |\
+ grep -v "MYR" |\
+ grep -v "LB: ${MAGIC_STRING}" |\
+ grep -v "LB: ${MAGIC_STRING_2}" |\
+ grep -v "LB: ${MAGIC_STRING_3}" |\
+ grep -v "LB: ${MAGIC_STRING_4}" |\
+ grep -iv "zcl" |\
+ grep -iv "zen" |\
+ grep -iv "kmd" |\
+ sed 's/\[/\'$'\n\[/g'
 echo ""
 echo $LAST
 echo "           NOW "`TZ=UTC date +"%Y-%m-%d %H:%M:%S UTC"`

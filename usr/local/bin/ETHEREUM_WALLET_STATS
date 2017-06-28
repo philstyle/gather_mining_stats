@@ -19,7 +19,7 @@ for WORKER in `cat ${OUTFILE} | jq '.workers | keys[]'`
 do
 # cat ${OUTFILE} | jq ".workers.${WORKER}.worker, .workers.${WORKER}.hashrate, .workers.${WORKER}.reportedHashRate, .workers.${WORKER}.validShares, .workers.${WORKER}.invalidShares" | awk 'NR > 1 { printf("\t") } {printf "%s",$0}' | tr -d '"'
  
- if [ ${#WORKER} -lt 8 ]; then
+ if [ ${#WORKER} -lt 10 ]; then
   printf "%s\t\t" ${WORKER} | tr -d '"'
  else
   printf "%s\t" ${WORKER} | tr -d '"'

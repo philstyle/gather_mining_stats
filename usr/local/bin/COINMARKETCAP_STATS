@@ -1,0 +1,17 @@
+#!/bin/bash
+
+OUTFILE=/tmp/COINMARKETCAP_MINEABLE
+
+curl --silent https://coinmarketcap.com/currencies/views/filter-non-mineable/ > ${OUTFILE}
+COINS=`cat ${OUTFILE} | grep "percent-24h" | html2text -nobs -width 200 | wc -l`
+PERCENTS=`cat ${OUTFILE} | grep "percent-24h" | html2text -nobs -width 200 | tr -d '%' | awk 'NR > 1 { printf("+") } {printf "%s",$0}'`
+AVG_PCT=`echo "scale=2;( ${PERCENTS} ) / ${COINS}" | bc -l`
+
+
+echo "----------------------------------------------------------------------------------------------------------"
+cat ${OUTFILE} | html2text -nobs -width 200 | grep "^#" | grep Circulating | sed "s/Market Cap//" | sed "s/Name /Name/" | sed "s/Price          /Price/" | sed "s/Volume/  Volume/" | sed "s/%/      %/" | awk -F"Price Graph" '{print $1}'
+
+cat ${OUTFILE} | html2text -nobs -width 200 | grep -vi "donate" | egrep -i "ethereum|ethereum-classic|digibyte|ubiq|expanse|musicoin|bitcoin|zcash" | grep -iv "bitcoindark" | awk -F"sparkline" '{print $1}' | awk '{print substr($0, 1, length($0)-1)}'
+echo "----------------------------------------------------------------------------------------------------------"
+printf "\t\t\t\t\t\t\t\t\t%s   %s" "AVERAGE % CHANGE" "${AVG_PCT}%"
+echo ""

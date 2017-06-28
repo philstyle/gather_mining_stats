@@ -1,7 +1,8 @@
 #!/bin/bash
 
 
-/usr/local/bin/ETHEREUM_WALLET_STATS | egrep "^1080|^760|^RX480|^air|^cubuntu|^monolith" > /tmp/ETH_RUNSTAT
+/usr/local/bin/ETHEREUM_WALLET_STATS | egrep "^1080|^760|^rx480|^RX480|^quiet|^air|^cubuntu|^monolith" > /tmp/ETH_RUNSTAT
+#/usr/local/bin/ETHEREUM_NANOPOOL_WALLET_STATS | egrep "^1080|^760|^RX480|^air|^cubuntu|^monolith" > /tmp/ETH_NANOPOOL_RUNSTAT
 /usr/local/bin/ETC_WALLET_STATS | egrep "^1080|^760|^RX|^air|^cubuntu|^monolith" > /tmp/ETC_RUNSTAT
 /usr/local/bin/EXP_WALLET_STATS | egrep "^1080|^760|^RX|^air|^cubuntu|^monolith" > /tmp/EXP_RUNSTAT
 /usr/local/bin/MUSICOIN_WALLET_STATS | egrep "^1080|^760|^RX|^air|^cubuntu|^monolith" > /tmp/MUS_RUNSTAT
@@ -22,6 +23,7 @@ printf "%s\t%s\t\t%s\t\t%s\t\t%s\t%s" "COIN" "HOST" "HR1" "HR2" "AUX1" "AUX2"
 echo ""
 echo "--------------------------------------------------------------------"
 STAT "/tmp/ETH_RUNSTAT" ETH
+#STAT "/tmp/ETH_NANOPOOL_RUNSTAT" ETH
 STAT "/tmp/ETC_RUNSTAT" ETC
 STAT "/tmp/EXP_RUNSTAT" EXP
 STAT "/tmp/MUS_RUNSTAT" MUS

@@ -1,7 +1,8 @@
 #!/bin/bash
 OUTFILE=/tmp/EXP_STATS
 
-timeout 8 curl --ssl --silent "https://dwarfpool.com/exp/api?wallet=0x254856971d2cf91bd7835660f2a2b7deafb037fe&email=yfisso@gmail.com" > ${OUTFILE}
+#timeout 8 curl --ssl --silent "https://dwarfpool.com/exp/api?wallet=0x254856971d2cf91bd7835660f2a2b7deafb037fe&email=yfisso@gmail.com" > ${OUTFILE}
+timeout 8 curl --ssl --silent "https://dwarfpool.com/exp/api?wallet=0x254856971d2cf91bd7835660f2a2b7deafb037fe&email=mail@example.com" > ${OUTFILE}
 
 if [ `du -b ${OUTFILE} | awk '{print $1}'` -eq "0" ]; then
   echo "NO STATS"
@@ -34,22 +35,23 @@ printf "\t%s\t%s" "SECONDS_SINCE" "ALIVE"
 echo ""
 for WORKER in `cat ${OUTFILE} | jq '.workers | keys[]' | tr -d '"'`
 do
- HR1=`cat ${OUTFILE} | jq ".workers.${WORKER}.hashrate" | tr -d '"'`
- HR1=`echo "scale=1; ${HR1} / 1" | bc -l` 
- HR2=`cat ${OUTFILE} | jq ".workers.${WORKER}.hashrate_calculated" | tr -d '"'`
- HR2=`echo "scale=1; ${HR2} / 1" | bc -l` 
- SEC=`cat ${OUTFILE} | jq ".workers.${WORKER}.second_since_submit" | tr -d '"'`
- ALIVE=`cat ${OUTFILE} | jq ".workers.${WORKER}.alive" | tr -d '"'`
+ ALIVE=`cat ${OUTFILE} | jq ".workers.\"${WORKER}\".alive" | tr -d '"'`
 
- if [ ${#WORKER} -lt 8 ]; then
-  printf "%s\t\t" ${WORKER} | tr -d '"'
- else
-  printf "%s\t" ${WORKER} | tr -d '"'
- fi
- if [ ${ALIVE} = "true" ]; then
+ if [ "${ALIVE}" = "true" ]; then
+  HR1=`cat ${OUTFILE} | jq ".workers.\"${WORKER}\".hashrate" | tr -d '"'`
+  HR1=`echo "scale=1; ${HR1} / 1" | bc -l` 
+  HR2=`cat ${OUTFILE} | jq ".workers.\"${WORKER}\".hashrate_calculated" | tr -d '"'`
+  HR2=`echo "scale=1; ${HR2} / 1" | bc -l` 
+  SEC=`cat ${OUTFILE} | jq ".workers.\"${WORKER}\".second_since_submit" | tr -d '"'`
+  if [ ${#WORKER} -lt 8 ]; then
+   printf "%s\t\t" ${WORKER} | tr -d '"'
+  else
+   printf "%s\t" ${WORKER} | tr -d '"'
+  fi
   printf "%s\t%s\t%s\t%s" "${HR1} MH/s" "${HR2} MH/s" ${SEC} ${ALIVE}
-  #cat ${OUTFILE} | jq ".workers.${WORKER}.hashrate, .workers.${WORKER}.hashrate_calculated, .workers.${WORKER}.second_since_submit, .workers.${WORKER}.alive" | awk 'NR > 1 { printf("\t") } {printf "%s",$0}'
+  #cat ${OUTFILE} | jq ".workers.\"${WORKER}\".hashrate, .workers.\"${WORKER}\".hashrate_calculated, .workers.\"${WORKER}\".second_since_submit, .workers.\"${WORKER}\".alive" | awk 'NR > 1 { printf("\t") } {printf "%s",$0}'
   echo ""
  fi
+
 done
 echo ""
