@@ -1,12 +1,12 @@
 #!/bin/bash
 
 
-/usr/local/bin/ETHEREUM_WALLET_STATS | egrep "^1080|^760|^rx480|^RX480|^quiet|^air|^cubuntu|^monolith" > /tmp/ETH_RUNSTAT
+/usr/local/bin/ETHEREUM_WALLET_STATS | egrep "^1080|^760|^rx480|^RX480|^abq|^quiet|^air|^cubuntu|^monolith" > /tmp/ETH_RUNSTAT
 #/usr/local/bin/ETHEREUM_NANOPOOL_WALLET_STATS | egrep "^1080|^760|^RX480|^air|^cubuntu|^monolith" > /tmp/ETH_NANOPOOL_RUNSTAT
-/usr/local/bin/ETC_WALLET_STATS | egrep "^1080|^760|^RX|^air|^cubuntu|^monolith" > /tmp/ETC_RUNSTAT
-/usr/local/bin/EXP_WALLET_STATS | egrep "^1080|^760|^RX|^air|^cubuntu|^monolith" > /tmp/EXP_RUNSTAT
-/usr/local/bin/MUSICOIN_WALLET_STATS | egrep "^1080|^760|^RX|^air|^cubuntu|^monolith" > /tmp/MUS_RUNSTAT
-/usr/local/bin/UBIQ_WALLET_STATS | egrep "^1080|^760|^RX|^air|^cubuntu|^monolith" > /tmp/UBI_RUNSTAT
+/usr/local/bin/ETC_WALLET_STATS | egrep "^1080|^760|^RX|^air|^abq|^cubuntu|^monolith" > /tmp/ETC_RUNSTAT
+/usr/local/bin/EXP_WALLET_STATS | egrep "^1080|^760|^RX|^air|^abq|^cubuntu|^monolith" > /tmp/EXP_RUNSTAT
+/usr/local/bin/MUSICOIN_WALLET_STATS | egrep "^1080|^760|^RX|^abq|^air|^cubuntu|^monolith" > /tmp/MUS_RUNSTAT
+/usr/local/bin/UBIQ_WALLET_STATS | egrep "^1080|^760|^RX|^air|^abq|^cubuntu|^monolith" > /tmp/UBI_RUNSTAT
 /usr/local/bin/DIGIBYTE_WALLET_STATS | egrep "^1080|^760|RX480|^air|^cubuntu|^monolith" > /tmp/DIG_RUNSTAT
 
 
