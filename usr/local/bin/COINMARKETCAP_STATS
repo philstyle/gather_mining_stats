@@ -2,7 +2,7 @@
 
 OUTFILE=/tmp/COINMARKETCAP_MINEABLE
 
-curl --silent https://coinmarketcap.com/currencies/views/filter-non-mineable/ > ${OUTFILE}
+curl --silent https://coinmarketcap.com/coins/views/filter-non-mineable/ > ${OUTFILE}
 COINS=`cat ${OUTFILE} | grep "percent-24h" | html2text -nobs -width 200 | wc -l`
 PERCENTS=`cat ${OUTFILE} | grep "percent-24h" | html2text -nobs -width 200 | tr -d '%' | awk 'NR > 1 { printf("+") } {printf "%s",$0}'`
 AVG_PCT=`echo "scale=2;( ${PERCENTS} ) / ${COINS}" | bc -l`
