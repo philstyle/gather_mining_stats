@@ -8,6 +8,7 @@
 /usr/local/bin/MUSICOIN_WALLET_STATS | egrep "^1080|^760|^RX|^abq|^air|^cubuntu|^monolith" > /tmp/MUS_RUNSTAT
 /usr/local/bin/UBIQ_WALLET_STATS | egrep "^1080|^760|^RX|^air|^abq|^cubuntu|^monolith" > /tmp/UBI_RUNSTAT
 /usr/local/bin/DIGIBYTE_WALLET_STATS | egrep "^1080|^760|RX480|^air|^cubuntu|^monolith" > /tmp/DIG_RUNSTAT
+/usr/local/bin/ZCASH_WALLET_STATS | egrep "^1080|^air" > /tmp/ZEC_RUNSTAT
 
 
 STAT() {
@@ -29,6 +30,7 @@ STAT "/tmp/EXP_RUNSTAT" EXP
 STAT "/tmp/MUS_RUNSTAT" MUS
 STAT "/tmp/UBI_RUNSTAT" UBI
 STAT "/tmp/DIG_RUNSTAT" DIG
+STAT "/tmp/ZEC_RUNSTAT" ZEC
 echo "--------------------------------------------------------------------"
 SUMSTR=`cat /tmp/*RUNSTAT | awk '{print $4}' | grep "^[0-9]" | awk 'NR > 1 { printf("+") } {printf "%s",$0}'`
 SUM=`echo ${SUMSTR} | bc -l`
