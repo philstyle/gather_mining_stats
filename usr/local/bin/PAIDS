@@ -116,7 +116,7 @@ printf "%s\t%s\t%s\t%s\t%s\t%s" "MUSICOIN" $MUSUNPAID $MUSPAID $MUSUNUSD $MUSPAI
 echo ""
 printf "%s\t\t%s\t%s\t%s\t%s\t%s" "UBIQ" $UBIQUNPAID $UBIQPAID $UBIQUNUSD $UBIQPAIDUSD $UBIUSD
 echo ""
-printf "%s\t\t%s\t%s\t%s\t%s\t%s" "UBIQ" $ZECUNPAID $ZECPAID $ZECUNUSD $ZECPAIDUSD $ZECUSD
+printf "%s\t\t%s\t%s\t%s\t%s\t%s" "ZCASH" $ZECUNPAID $ZECPAID $ZECUNUSD $ZECPAIDUSD $ZECUSD
 echo ""
 echo "---------------------------------------------------------"
 
