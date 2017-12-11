@@ -10,7 +10,7 @@ fi
 printf "%s\t%s\t%s\t%s" "SYM" "RANK" "PRICE $"
 echo ""
 
-for COIN in ethereum ethereum-classic expanse ubiq musicoin digibyte; do
+for COIN in ethereum ethereum-classic expanse ubiq musicoin digibyte zcash; do
  OUTFILE=/tmp/${COIN}ticker
  if [ ! -e ${OUTFILE} ] || [ "${OVERRIDE}" != "" ]; then
   curl --silent "https://api.coinmarketcap.com/v1/ticker/${COIN}/" > ${OUTFILE}

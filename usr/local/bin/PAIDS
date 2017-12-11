@@ -15,6 +15,13 @@ ETHPAID=`echo "scale=4;( ${ETHPAID} ) / ${HUGE}" | bc -l`
 ETHUNPAID=`cat /tmp/ETHEREUM_STATS | jq ".unpaid"`
 ETHUNPAID=`echo "scale=5; ${ETHUNPAID} / ${HUGE}" | bc -l`
 
+
+LARGER=100000000
+ZECPAID=`cat /tmp/ZCASH_STATS | jq ".payouts[].amount" | awk 'NR > 1 { printf("+") } {printf "%s",$0}'`
+ZECPAID=`echo "scale=4;( ${ZECPAID} ) / ${LARGER}" | bc -l`
+ZECUNPAID=`cat /tmp/ZCASH_STATS | jq ".unpaid"`
+ZECUNPAID=`echo "scale=5; ${ZECUNPAID} / ${LARGER}" | bc -l`
+
 #ETHEREUM_NANOPOOL_STATS
 #ETHNANOPAID="0.0"
 #ETHNANOUNPAID=`cat /tmp/ETHEREUM_NANOPOOL_STATS | jq ".data.balance" | tr -d '"'`
@@ -63,6 +70,11 @@ ETHUSD=`cat /tmp/ethereumticker | jq ".[0].price_usd" | tr -d '"'`
 ETHUNUSD=`echo "scale=2; ( ${ETHUNPAID} * ${ETHUSD} ) / 1" | bc -l`
 ETHPAIDUSD=`echo "scale=2; ( ${ETHPAID} * ${ETHUSD} ) / 1" | bc -l`
 
+#zcashticker
+ZECUSD=`cat /tmp/zcashticker | jq ".[0].price_usd" | tr -d '"'`
+ZECUNUSD=`echo "scale=2; ( ${ZECUNPAID} * ${ZECUSD} ) / 1" | bc -l`
+ZECPAIDUSD=`echo "scale=2; ( ${ZECPAID} * ${ZECUSD} ) / 1" | bc -l`
+
 #ethereum from nanopool
 #ETHNANOUNUSD=`echo "scale=2; ( ${ETHNANOUNPAID} * ${ETHUSD} ) / 1" | bc -l`
 #ETHNANOPAIDUSD=`echo "scale=2; ( ${ETHNANOPAID} * ${ETHUSD} ) / 1" | bc -l`
@@ -104,10 +116,12 @@ printf "%s\t%s\t%s\t%s\t%s\t%s" "MUSICOIN" $MUSUNPAID $MUSPAID $MUSUNUSD $MUSPAI
 echo ""
 printf "%s\t\t%s\t%s\t%s\t%s\t%s" "UBIQ" $UBIQUNPAID $UBIQPAID $UBIQUNUSD $UBIQPAIDUSD $UBIUSD
 echo ""
+printf "%s\t\t%s\t%s\t%s\t%s\t%s" "UBIQ" $ZECUNPAID $ZECPAID $ZECUNUSD $ZECPAIDUSD $ZECUSD
+echo ""
 echo "---------------------------------------------------------"
 
-UNPTOTUSD=`echo "${DIGUNUSD} + ${ETHUNUSD} + ${EXPUNUSD} + ${MUSUNUSD} + ${UBIQUNUSD}" | bc -l`
-PAIDTOTUSD=`echo "${DIGPAIDUSD} + ${ETHPAIDUSD} + ${EXPPAIDUSD} + ${MUSPAIDUSD} + ${UBIQPAIDUSD}" | bc -l`
+UNPTOTUSD=`echo "${DIGUNUSD} + ${ETHUNUSD} + ${EXPUNUSD} + ${MUSUNUSD} + ${UBIQUNUSD} + ${ZECUNUSD}" | bc -l`
+PAIDTOTUSD=`echo "${DIGPAIDUSD} + ${ETHPAIDUSD} + ${EXPPAIDUSD} + ${MUSPAIDUSD} + ${UBIQPAIDUSD} + ${ZECPAIDUSD}" | bc -l`
 printf "\t\t\t%s\t%s\t%s" "~TOT" "${UNPTOTUSD}" "${PAIDTOTUSD}"
 echo ""
 
