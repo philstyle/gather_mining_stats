@@ -1,7 +1,7 @@
 #!/bin/bash
 OUTFILE=/tmp/UBIQ_STATS
 
-timeout 8 curl --silent http://ubiqpool.io/api/accounts/0x2a6d7f678ef26d4dd120c796b24e550118939854 > ${OUTFILE}
+timeout 8 curl --silent https://ubiqpool.io/api/accounts/0x2a6d7f678ef26d4dd120c796b24e550118939854 > ${OUTFILE}
 
 if [ `du -b ${OUTFILE} | awk '{print $1}'` -eq "0" ]; then
   echo "NO STATS"
