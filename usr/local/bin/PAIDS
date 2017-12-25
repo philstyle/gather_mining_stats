@@ -69,11 +69,13 @@ fi
 ETHUSD=`cat /tmp/ethereumticker | jq ".[0].price_usd" | tr -d '"'`
 ETHUNUSD=`echo "scale=2; ( ${ETHUNPAID} * ${ETHUSD} ) / 1" | bc -l`
 ETHPAIDUSD=`echo "scale=2; ( ${ETHPAID} * ${ETHUSD} ) / 1" | bc -l`
+ETHUSD=`echo "scale=3; ( ${ETHUSD} / 1 )" | bc -l`
 
 #zcashticker
 ZECUSD=`cat /tmp/zcashticker | jq ".[0].price_usd" | tr -d '"'`
 ZECUNUSD=`echo "scale=2; ( ${ZECUNPAID} * ${ZECUSD} ) / 1" | bc -l`
 ZECPAIDUSD=`echo "scale=2; ( ${ZECPAID} * ${ZECUSD} ) / 1" | bc -l`
+ZECUSD=`echo "scale=3; ( ${ZECUSD} / 1 )" | bc -l`
 
 #ethereum from nanopool
 #ETHNANOUNUSD=`echo "scale=2; ( ${ETHNANOUNPAID} * ${ETHUSD} ) / 1" | bc -l`
@@ -86,43 +88,47 @@ ETCUSD=`cat /tmp/ethereum-classicticker | jq ".[0].price_usd" | tr -d '"'`
 EXPUSD=`cat /tmp/expanseticker | jq ".[0].price_usd" | tr -d '"'`
 EXPUNUSD=`echo "scale=2; ( ${EXPUNPAID} * ${EXPUSD} ) / 1" | bc -l`
 EXPPAIDUSD=`echo "scale=2; ( ${EXPPAID} * ${EXPUSD} ) / 1" | bc -l`
+EXPUSD=`echo "scale=3; ( ${EXPUSD} / 1 )" | bc -l`
 
 
 #ubiqticker
 UBIUSD=`cat /tmp/ubiqticker | jq ".[0].price_usd" | tr -d '"'`
 UBIQUNUSD=`echo "scale=2; ( ${UBIQUNPAID} * ${UBIUSD} ) / 1" | bc -l`
 UBIQPAIDUSD=`echo "scale=2; ( ${UBIQPAID} * ${UBIUSD} ) / 1" | bc -l`
+UBIUSD=`echo "scale=3; ( ${UBIUSD} / 1 )" | bc -l`
 
 #musicointicker
 MUSUSD=`cat /tmp/musicointicker | jq ".[0].price_usd" | tr -d '"'`
 MUSUNUSD=`echo "scale=2; ( ${MUSUNPAID} * ${MUSUSD} ) / 1" | bc -l`
 MUSPAIDUSD=`echo "scale=2; ( ${MUSPAID} * ${MUSUSD} ) / 1" | bc -l`
+MUSUSD=`echo "scale=3; ( ${MUSUSD} / 1 )" | bc -l`
 
 #digibyteticker
 DIGUSD=`cat /tmp/digibyteticker | jq ".[0].price_usd" | tr -d '"'`
 DIGUNUSD=`echo "scale=2; ( ${DIGUNPAID} * ${DIGUSD} ) / 1" | bc -l`
 DIGPAIDUSD=`echo "scale=2; ( ${DIGPAID} * ${DIGUSD} ) / 1" | bc -l`
+DIGUSD=`echo "scale=3; ( ${DIGUSD} / 1 )" | bc -l`
 
-printf "%s\t\t%s\t%s\t%s\t%s\t%s" "COIN" "UNPAID" "PAID" "~UN$" "~$" "~\$/coin"
+printf "%s\t\t%s\t%s\t%8s %6s\t%9s" "COIN" "UNPAID" "PAID" "~\$/coin" "~UN$" "~$"
 echo ""
 echo "---------------------------------------------------------"
-printf "%s\t%s\t%s\t%s\t%s\t%s" "DIGIBYTE" $DIGUNPAID $DIGPAID $DIGUNUSD $DIGPAIDUSD $DIGUSD
+printf "%s\t%s\t%s\t%8s %6s\t%9s" "DIGIBYTE" $DIGUNPAID $DIGPAID $DIGUSD $DIGUNUSD $DIGPAIDUSD
 echo ""
-printf "%s\t%s\t%s\t%s\t%s\t%s" "ETHEREUM" $ETHUNPAID $ETHPAID $ETHUNUSD $ETHPAIDUSD $ETHUSD
+printf "%s\t%s\t%s\t%8s %6s\t%9s" "ETHEREUM" $ETHUNPAID $ETHPAID $ETHUSD $ETHUNUSD $ETHPAIDUSD
 echo ""
-printf "%s\t\t%s\t%s\t%s\t%s\t%s" "EXPANSE" $EXPUNPAID $EXPPAID $EXPUNUSD $EXPPAIDUSD $EXPUSD
+printf "%s\t\t%s\t%s\t%8s %6s\t%9s" "EXPANSE" $EXPUNPAID $EXPPAID $EXPUSD $EXPUNUSD $EXPPAIDUSD
 echo ""
-printf "%s\t%s\t%s\t%s\t%s\t%s" "MUSICOIN" $MUSUNPAID $MUSPAID $MUSUNUSD $MUSPAIDUSD $MUSUSD
+printf "%s\t%s\t%s\t%8s %6s\t%9s" "MUSICOIN" $MUSUNPAID $MUSPAID $MUSUSD $MUSUNUSD $MUSPAIDUSD
 echo ""
-printf "%s\t\t%s\t%s\t%s\t%s\t%s" "UBIQ" $UBIQUNPAID $UBIQPAID $UBIQUNUSD $UBIQPAIDUSD $UBIUSD
+printf "%s\t\t%s\t%s\t%8s %6s\t%9s" "UBIQ" $UBIQUNPAID $UBIQPAID $UBIUSD $UBIQUNUSD $UBIQPAIDUSD
 echo ""
-printf "%s\t\t%s\t%s\t%s\t%s\t%s" "ZCASH" $ZECUNPAID $ZECPAID $ZECUNUSD $ZECPAIDUSD $ZECUSD
+printf "%s\t\t%s\t%s\t%8s %6s\t%9s" "ZCASH" $ZECUNPAID $ZECPAID $ZECUSD $ZECUNUSD $ZECPAIDUSD
 echo ""
 echo "---------------------------------------------------------"
 
 UNPTOTUSD=`echo "${DIGUNUSD} + ${ETHUNUSD} + ${EXPUNUSD} + ${MUSUNUSD} + ${UBIQUNUSD} + ${ZECUNUSD}" | bc -l`
 PAIDTOTUSD=`echo "${DIGPAIDUSD} + ${ETHPAIDUSD} + ${EXPPAIDUSD} + ${MUSPAIDUSD} + ${UBIQPAIDUSD} + ${ZECPAIDUSD}" | bc -l`
-printf "\t\t\t%s\t%s\t%s" "~TOT" "${UNPTOTUSD}" "${PAIDTOTUSD}"
+printf "\t\t\t\t%8s %6s\t%9s" "~TOT" "${UNPTOTUSD}" "${PAIDTOTUSD}"
 echo ""
 
 NOW=`date +%s`
